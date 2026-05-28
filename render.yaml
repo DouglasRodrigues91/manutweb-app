@@ -1,0 +1,29 @@
+services:
+  # Backend FastAPI
+  - type: web
+    name: manutweb-api
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_NAME
+        value: manutencao_app_web
+      - key: MONGODB_URI
+        sync: false # Você preencherá sua senha no painel do Render de forma segura
+      - key: SECRET_KEY
+        generateValue: true
+
+  # Frontend React (Static Site)
+  - type: web
+    name: manutweb-painel
+    env: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: manutweb-api
+          envVar: RENDER_EXTERNAL_URL
