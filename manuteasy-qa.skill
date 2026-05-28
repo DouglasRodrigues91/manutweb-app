@@ -1,0 +1,113 @@
+---
+name: manuteasy-qa-analyst
+version: 1.0.0
+description: >
+  QA Senior Analyst para o projeto ManutEasy. Realiza auditoria completa de lógica,
+  layout, persistência e comportamento antes de qualquer build APK/AAB.
+  OBRIGATÓRIO executar antes de qualquer distribuição.
+---
+
+# 🔍 ManutEasy QA Senior Analyst Skill
+
+## REGRA DE OURO ABSOLUTA
+> **NENHUM APK ou AAB deve ser gerado sem a aprovação deste pipeline de QA.**
+> Esta regra está registada no `PROJECT_RULES.md` e no `manuteasy_spec.json`.
+
+---
+
+## Pipeline de Verificação (Executar em Ordem)
+
+### FASE 1 — Auditoria de Lógica de Negócio
+
+#### 1.1 Slots de Manutenção (`AppState.maintenanceSlots`)
+- [ ] Verificar que `break` só ocorre após o **primeiro slot futuro não concluído** por edifício.
+- [ ] Verificar que slots **passados** são sempre gerados, mesmo após um `break` de slot futuro.
+- [ ] Verificar que `dataAgendada` é priorizada sobre `data` na comparação de histórico.
+- [ ] Verificar que **não há duplicação** de slots para o mesmo período.
+- [ ] Verificar que edifícios `isAvulsa` geram exatamente 1 slot.
+
+#### 1.2 Finalização de Manutenção (`finalizeMaintenance`)
+- [ ] Verificar que `historico.insert(0, maintenance)` é chamado.
+- [ ] Verificar que `ultimaManutencao` é atualizado.
+- [ ] Verificar que `_save()` é chamado.
+- [ ] Verificar que `notifyListeners()` é chamado.
+- [ ] Verificar que `dataAgendada` é passado corretamente do `ManutencaoScreen`.
+
+#### 1.3 Eliminação de Relatório (`deleteReport`)
+- [ ] Verificar que remover um relatório **não** afeta outros slots.
+- [ ] Verificar que o slot volta a "PENDENTE" após eliminação.
+
+#### 1.4 Métricas do Dashboard
+- [ ] Verificar que `metrics` contabiliza todos os slots (não apenas os primeiros).
+- [ ] Verificar que os 4 cards do Dashboard navegam com o filtro correto pré-aplicado.
+
+---
+
+### FASE 2 — Auditoria de UI e Layout
+
+#### 2.1 Anti-Overflow (ZERO TOLERÂNCIA)
+- [ ] Verificar que toda `Row` com texto dinâmico usa `Expanded`, `Flexible` ou `FittedBox`.
+- [ ] Verificar que `ListTile.trailing` com múltiplos botões usa `Row(mainAxisSize: MainAxisSize.min)`.
+- [ ] Verificar que diálogos de histórico usam `Row + Expanded` em vez de `ListTile` simples.
+- [ ] Verificar que nomes de edifícios longos usam `overflow: TextOverflow.ellipsis`.
+- [ ] Verificar que os badges de status usam `FittedBox`.
+
+#### 2.2 Navegação e Filtros
+- [ ] Clicar "Pendentes" → Lista filtrada por PENDENTE.
+- [ ] Clicar "Concluídas" → Lista filtrada por CONCLUÍDA.
+- [ ] Clicar "Hoje" → Lista filtrada por HOJE.
+- [ ] Clicar "Agendadas" → Lista filtrada por AGENDADA.
+- [ ] "Ver tudo" → Todas as manutenções.
+
+#### 2.3 Histórico de Relatórios
+- [ ] Após gerar PDF, o relatório aparece no Log do edifício.
+- [ ] O slot muda de status para CONCLUÍDA após geração.
+- [ ] Eliminar relatório → slot volta a PENDENTE/AGENDADA.
+
+---
+
+### FASE 3 — Auditoria de Persistência
+
+#### 3.1 Armazenamento JSON
+- [ ] Verificar que `manuteasy_data.json` é atualizado após cada operação.
+- [ ] Verificar que `historico` de cada edifício contém `dataAgendada`, `pdfPath`, `reportNo`.
+- [ ] Verificar que fotos (`fotoAntes`/`fotoDepois`) são guardadas no snapshot.
+
+#### 3.2 Spec e Regras
+- [ ] Verificar que `manuteasy_spec.json` reflete a versão atual.
+- [ ] Verificar que `PROJECT_RULES.md` está atualizado com as lições aprendidas.
+
+---
+
+### FASE 4 — Verificação de Compilação
+
+#### 4.1 Pré-Build
+- [ ] `flutter analyze` sem erros críticos.
+- [ ] Sem caracteres Unicode problemáticos em PDFs (✓, ×, etc.).
+- [ ] Sem imports não utilizados.
+
+#### 4.2 Build
+- [ ] `flutter build apk --debug --no-tree-shake-icons` → EXIT CODE 0.
+- [ ] APK copiado para a raiz com nome versionado.
+- [ ] `manuteasy_spec.json` atualizado com nova versão e changelog.
+
+---
+
+## Checklist Rápida de Bugs Conhecidos
+
+| Bug | Causa | Solução |
+|-----|-------|---------|
+| Right overflowed 37px | `ListTile.trailing` com `Row` | Usar `Row` customizada com `Expanded` no título |
+| Right overflowed 30px | `Row` sem `Flexible` em `_TaskCard` | Adicionar `FittedBox` no badge de status |
+| Filtros não aplicados | `go_all()` sem argumento de filtro | Passar `initial_filter` para a função |
+| Slots duplicados | `break` prematuro no loop | Só fazer `break` após slot futuro não concluído |
+| Slot não marca como concluído | `dataAgendada` null | Garantir que `dataAgendada` é passado no `ManutencaoScreen` |
+| Fotos perdidas | Snapshot sem `fotoAntes`/`fotoDepois` | Incluir fotos no `TarefaSnapshot` |
+
+---
+
+## Notas Importantes
+
+1. **Simulador ≠ APK**: Sempre verificar no APK real. O simulador é apenas um espelho.
+2. **Nunca gerar APK sem:** Verificar o `manuteasy_spec.json`, atualizar versão, e passar por este checklist.
+3. **Após correção de bug**: Atualizar `PROJECT_RULES.md` com a lição aprendida.

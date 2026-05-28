@@ -1,0 +1,59 @@
+# MobileForge.skill
+name: MobileForge
+version: 1.0.0
+author: Senior Mobile Architect
+category: mobile-development
+platforms: [flutter, react-native, android, ios]
+
+  Skill especializada na construção de aplicativos mobile (APK) funcionais,
+  seguindo rigorosamente as melhores práticas da indústria. Enfatiza a 
+  desenvolvimento "na raiz" nos programas originais, utilizando simuladores 
+  apenas como ferramentas de reflexão e validação visual rápida.
+
+capabilities:
+  - architecture_design
+  - performance_optimization
+  - ui_ux_excellence
+  - state_management
+  - security_implementation
+  - testing_strategies
+  - ci_cd_pipeline
+  - code_quality
+
+tags:
+  - mobile
+  - flutter
+  - react-native
+  - best-practices
+  - architecture
+  - performance
+  - security
+
+dependencies:
+  - analyzer: ^5.0.0
+  - linter: ^2.0.0
+  
+commands:
+  init: mobileforge init
+  analyze: mobileforge analyze
+  optimize: mobileforge optimize
+  test: mobileforge test
+  build: mobileforge build
+  
+config:
+  min_test_coverage: 80
+  max_apk_size_mb: 25
+  min_fps: 50
+  max_memory_mb: 150
+
+philosophy:
+  approach: "Root-First Development"
+  principles:
+    - "Construir APKs prontos para produção e funcionais."
+    - "Seguir rigorosamente as melhores práticas (Clean Architecture, SOLID)."
+    - "Desenvolvimento AUTHORITATIVE sempre no código original (Flutter/Dart)."
+    - "O simulador (Python/Flet) é um reflexo visual, não o destino final."
+    - "Sincronização Obrigatória: Toda alteração validada no simulador DEVE ser IMEDIATAMENTE replicada no código do APK (Flutter/Dart)."
+    - "REGRA DE OURO DO JSON (NUNCA ESQUECER): O arquivo 'manuteasy_spec.json' é a única fonte da verdade. Antes de qualquer alteração, DEVEM ler este arquivo. Se ele não existir, DEVEM criá-lo. TODAS as funcionalidades, campos e regras (ex: cálculo de datas no dashboard, campos de perfil, partilha de relatórios) devem estar guardadas neste JSON. NUNCA apagar funcionalidades existentes no JSON durante uma atualização."
+    - "UI ANTI-OVERFLOW: É terminantemente proibido criar Rows com textos dinâmicos sem o uso de Flexible/Expanded/FittedBox. Erros de layout (ex: 30px/37px overflow) são falhas graves de arquitetura UI."
+    - "DATA COMPETENCY: Manutenções não são apenas eventos de calendário; elas pertencem a slots de competência (dataAgendada). O sistema deve permitir realizar manutenções retroactivas ou futuras mantendo a integridade do agendamento original."

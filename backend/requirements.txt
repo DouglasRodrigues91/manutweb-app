@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+motor
+pydantic
+python-dotenv
+pydantic-settings
+passlib
+bcrypt
+pyjwt
+python-jose
