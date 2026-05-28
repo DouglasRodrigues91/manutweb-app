@@ -16,7 +16,7 @@ function App() {
   const [apiStatus, setApiStatus] = useState('Checking...');
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/health')
+    fetch('https://manutweb-app.onrender.com/api/health')
       .then(res => res.json())
       .then(data => setApiStatus(data.status === 'ok' ? 'Online' : 'Offline'))
       .catch(() => setApiStatus('Offline (API not running)'));

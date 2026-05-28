@@ -17,9 +17,9 @@ export default function Equipamentos() {
     setLoading(true);
     try {
       const [resEq, resEd, resTi] = await Promise.all([
-        fetch('http://localhost:8000/api/equipamentos/'),
-        fetch('http://localhost:8000/api/edificios/'),
-        fetch('http://localhost:8000/api/tipos/')
+        fetch('https://manutweb-app.onrender.com/api/equipamentos/'),
+        fetch('https://manutweb-app.onrender.com/api/edificios/'),
+        fetch('https://manutweb-app.onrender.com/api/tipos/')
       ]);
       if(resEq.ok) setEquipamentos(await resEq.json());
       if(resEd.ok) setEdificios(await resEd.json());
@@ -45,7 +45,7 @@ export default function Equipamentos() {
     };
 
     try {
-      const res = await fetch('http://localhost:8000/api/equipamentos/', {
+      const res = await fetch('https://manutweb-app.onrender.com/api/equipamentos/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -63,7 +63,7 @@ export default function Equipamentos() {
 
   const handleDelete = async (id, nome) => {
     if(window.confirm(`Apagar equipamento "${nome}"?`)) {
-      await fetch(`http://localhost:8000/api/equipamentos/${id}`, { method: 'DELETE' });
+      await fetch(`https://manutweb-app.onrender.com/api/equipamentos/${id}`, { method: 'DELETE' });
       fetchData();
     }
   };

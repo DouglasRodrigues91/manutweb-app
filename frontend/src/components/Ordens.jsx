@@ -22,10 +22,10 @@ export default function Ordens() {
     setLoading(true);
     try {
       const [resO, resEd, resEq, resTi] = await Promise.all([
-        fetch('http://localhost:8000/api/ordens/'),
-        fetch('http://localhost:8000/api/edificios/'),
-        fetch('http://localhost:8000/api/equipamentos/'),
-        fetch('http://localhost:8000/api/tipos/')
+        fetch('https://manutweb-app.onrender.com/api/ordens/'),
+        fetch('https://manutweb-app.onrender.com/api/edificios/'),
+        fetch('https://manutweb-app.onrender.com/api/equipamentos/'),
+        fetch('https://manutweb-app.onrender.com/api/tipos/')
       ]);
       if(resO.ok) setOrdens(await resO.json());
       if(resEd.ok) setEdificios(await resEd.json());
@@ -59,7 +59,7 @@ export default function Ordens() {
     const body = { ...formData, checklist };
 
     try {
-      const res = await fetch('http://localhost:8000/api/ordens/', {
+      const res = await fetch('https://manutweb-app.onrender.com/api/ordens/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -77,13 +77,13 @@ export default function Ordens() {
 
   const handleDelete = async (id) => {
     if(window.confirm('Apagar esta ordem de serviço?')) {
-      await fetch(`http://localhost:8000/api/ordens/${id}`, { method: 'DELETE' });
+      await fetch(`https://manutweb-app.onrender.com/api/ordens/${id}`, { method: 'DELETE' });
       fetchData();
     }
   };
 
   const updateStatus = async (id, newStatus) => {
-    await fetch(`http://localhost:8000/api/ordens/${id}/status?status=${newStatus}`, { method: 'PUT' });
+    await fetch(`https://manutweb-app.onrender.com/api/ordens/${id}/status?status=${newStatus}`, { method: 'PUT' });
     fetchData();
   };
 
@@ -99,7 +99,7 @@ export default function Ordens() {
     setActiveOrdem(updated);
     
     // Save to DB
-    await fetch(`http://localhost:8000/api/ordens/${activeOrdem.id}/checklist/${index}?concluida=${concluida}`, { method: 'PUT' });
+    await fetch(`https://manutweb-app.onrender.com/api/ordens/${activeOrdem.id}/checklist/${index}?concluida=${concluida}`, { method: 'PUT' });
     
     // If all checked, maybe auto complete? (Optional feature)
     if (updated.checklist.every(item => item.concluida) && updated.status !== 'Concluída') {

@@ -14,7 +14,7 @@ export default function Edificios() {
   const fetchEdificios = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/edificios/');
+      const res = await fetch('https://manutweb-app.onrender.com/api/edificios/');
       if (res.ok) {
         const data = await res.json();
         setEdificios(data);
@@ -41,8 +41,8 @@ export default function Edificios() {
     e.preventDefault();
     try {
       const url = editMode 
-        ? `http://localhost:8000/api/edificios/${formData.id}` 
-        : 'http://localhost:8000/api/edificios/';
+        ? `https://manutweb-app.onrender.com/api/edificios/${formData.id}` 
+        : 'https://manutweb-app.onrender.com/api/edificios/';
       
       const method = editMode ? 'PUT' : 'POST';
       
@@ -66,7 +66,7 @@ export default function Edificios() {
   const handleDelete = async (id, nome) => {
     if (window.confirm(`Tem certeza que deseja apagar permanentemente o edifício "${nome}"?`)) {
       try {
-        const res = await fetch(`http://localhost:8000/api/edificios/${id}`, { method: 'DELETE' });
+        const res = await fetch(`https://manutweb-app.onrender.com/api/edificios/${id}`, { method: 'DELETE' });
         if (res.ok) fetchEdificios();
       } catch (err) {
         console.error(err);

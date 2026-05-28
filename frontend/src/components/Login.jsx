@@ -17,7 +17,7 @@ export default function Login({ onLogin }) {
         ? { email: formData.email, password: formData.password }
         : formData;
 
-      const res = await fetch(`http://localhost:8000${endpoint}`, {
+      const res = await fetch(`https://manutweb-app.onrender.com${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)

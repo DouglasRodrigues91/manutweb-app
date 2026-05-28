@@ -14,7 +14,7 @@ export default function Clientes() {
   const fetchClientes = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/clientes/');
+      const res = await fetch('https://manutweb-app.onrender.com/api/clientes/');
       if (res.ok) {
         const data = await res.json();
         setClientes(data);
@@ -41,8 +41,8 @@ export default function Clientes() {
     e.preventDefault();
     try {
       const url = editMode 
-        ? `http://localhost:8000/api/clientes/${formData.id}` 
-        : 'http://localhost:8000/api/clientes/';
+        ? `https://manutweb-app.onrender.com/api/clientes/${formData.id}` 
+        : 'https://manutweb-app.onrender.com/api/clientes/';
       
       const method = editMode ? 'PUT' : 'POST';
       
@@ -66,7 +66,7 @@ export default function Clientes() {
   const handleDelete = async (id, nome) => {
     if (window.confirm(`Tem certeza que deseja apagar permanentemente o cliente "${nome}"?`)) {
       try {
-        const res = await fetch(`http://localhost:8000/api/clientes/${id}`, { method: 'DELETE' });
+        const res = await fetch(`https://manutweb-app.onrender.com/api/clientes/${id}`, { method: 'DELETE' });
         if (res.ok) fetchClientes();
       } catch (err) {
         console.error(err);
