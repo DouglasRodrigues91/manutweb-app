@@ -83,3 +83,16 @@ class OrdemResponse(OrdemCreate):
     id: str
     edificio_nome: str
     equipamento_nome: str
+
+# --- Empresa ---
+class EmpresaUpdate(BaseModel):
+    nome: str
+    nif: str
+    morada: str
+    email: str
+    telefone: str
+    iban: str
+    logo_url: str = ""
+
+class EmpresaResponse(EmpresaUpdate):
+    id: str

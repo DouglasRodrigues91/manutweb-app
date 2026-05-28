@@ -8,6 +8,7 @@ import Edificios from './components/Edificios';
 import Equipamentos from './components/Equipamentos';
 import Tipos from './components/Tipos';
 import Ordens from './components/Ordens';
+import Empresa from './components/Empresa';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -55,6 +56,7 @@ function App() {
       case 'equipamentos': return <Equipamentos />;
       case 'tipos': return <Tipos />;
       case 'ordens': return <Ordens />;
+      case 'empresa': return <Empresa />;
       default: return <Dashboard apiStatus={apiStatus} />;
     }
   };
@@ -81,6 +83,9 @@ function App() {
           </li>
           <li>
             <a href="#ordens" className={currentRoute === 'ordens' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setCurrentRoute('ordens'); }}>Ordens Planejadas</a>
+          </li>
+          <li>
+            <a href="#empresa" className={currentRoute === 'empresa' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setCurrentRoute('empresa'); }}>A Minha Empresa</a>
           </li>
         </ul>
         <div className="user-profile" onClick={handleLogout}>

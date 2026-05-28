@@ -19,12 +19,13 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-from routers import auth, edificios, equipamentos, tipos, ordens
+from routers import auth, edificios, equipamentos, tipos, ordens, empresa
 app.include_router(auth.router)
 app.include_router(edificios.router)
 app.include_router(equipamentos.router)
 app.include_router(tipos.router)
 app.include_router(ordens.router)
+app.include_router(empresa.router)
 
 # Allow CORS for the React frontend
 app.add_middleware(
