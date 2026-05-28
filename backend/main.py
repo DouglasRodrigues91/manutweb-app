@@ -19,9 +19,9 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-from routers import auth, edificios, equipamentos, tipos, ordens, empresa
+from routers import auth, clientes, equipamentos, tipos, ordens, empresa
 app.include_router(auth.router)
-app.include_router(edificios.router)
+app.include_router(clientes.router)
 app.include_router(equipamentos.router)
 app.include_router(tipos.router)
 app.include_router(ordens.router)

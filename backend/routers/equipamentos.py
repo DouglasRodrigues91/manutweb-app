@@ -10,12 +10,12 @@ router = APIRouter(prefix="/api/equipamentos", tags=["equipamentos"])
 async def create_equipamento(eq: EquipamentoCreate):
     db = get_database()
     
-    if not ObjectId.is_valid(eq.edificio_id):
-        raise HTTPException(status_code=400, detail="ID de edifício inválido")
+    if not ObjectId.is_valid(eq.cliente_id):
+        raise HTTPException(status_code=400, detail="ID de cliente inválido")
         
-    edificio = await db.edificios.find_one({"_id": ObjectId(eq.edificio_id)})
-    if not edificio:
-        raise HTTPException(status_code=404, detail="Edifício não encontrado")
+    cliente = await db.clientes.find_one({"_id": ObjectId(eq.cliente_id)})
+    if not cliente:
+        raise HTTPException(status_code=404, detail="Cliente não encontrado")
 
     novo_eq = eq.model_dump()
     result = await db.equipamentos.insert_one(novo_eq)
@@ -23,11 +23,15 @@ async def create_equipamento(eq: EquipamentoCreate):
     return EquipamentoResponse(
         id=str(result.inserted_id),
         nome=eq.nome,
-        edificio_nome=edificio["nome"],
-        edificio_id=eq.edificio_id,
+        cliente_nome=cliente["nome"],
+        cliente_id=eq.cliente_id,
         tipo_id=eq.tipo_id,
         tipo_nome=eq.tipo_nome,
-        prox_manut=eq.prox_manut
+        prox_manut=eq.prox_manut,
+        marca=eq.marca,
+        modelo=eq.modelo,
+        num_serie=eq.num_serie,
+        localizacao=eq.localizacao
     )
 
 @router.get("/", response_model=List[EquipamentoResponse])
@@ -36,17 +40,21 @@ async def list_equipamentos():
     equipamentos = []
     cursor = db.equipamentos.find({})
     async for document in cursor:
-        edificio = await db.edificios.find_one({"_id": ObjectId(document["edificio_id"])}) if ObjectId.is_valid(document.get("edificio_id", "")) else None
-        edificio_nome = edificio["nome"] if edificio else "Desconhecido"
+        cliente = await db.clientes.find_one({"_id": ObjectId(document["cliente_id"])}) if ObjectId.is_valid(document.get("cliente_id", "")) else None
+        cliente_nome = cliente["nome"] if cliente else "Desconhecido"
         
         equipamentos.append(EquipamentoResponse(
             id=str(document["_id"]),
             nome=document["nome"],
-            edificio_nome=edificio_nome,
-            edificio_id=document.get("edificio_id", ""),
+            cliente_nome=cliente_nome,
+            cliente_id=document.get("cliente_id", ""),
             tipo_id=document.get("tipo_id", ""),
             tipo_nome=document.get("tipo_nome", ""),
-            prox_manut=document.get("prox_manut", "")
+            prox_manut=document.get("prox_manut", ""),
+            marca=document.get("marca", ""),
+            modelo=document.get("modelo", ""),
+            num_serie=document.get("num_serie", ""),
+            localizacao=document.get("localizacao", "")
         ))
     return equipamentos
 

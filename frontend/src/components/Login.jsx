@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_URL } from '../apiConfig';
 
 export default function Login({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,7 +18,7 @@ export default function Login({ onLogin }) {
         ? { email: formData.email, password: formData.password }
         : formData;
 
-      const res = await fetch(`https://manutweb-app.onrender.com${endpoint}`, {
+      const res = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)

@@ -10,14 +10,14 @@ router = APIRouter(prefix="/api/ordens", tags=["ordens"])
 async def create_ordem(ordem: OrdemCreate):
     db = get_database()
     
-    if not ObjectId.is_valid(ordem.edificio_id) or not ObjectId.is_valid(ordem.equipamento_id):
+    if not ObjectId.is_valid(ordem.cliente_id) or not ObjectId.is_valid(ordem.equipamento_id):
         raise HTTPException(status_code=400, detail="ID inválido")
         
-    edificio = await db.edificios.find_one({"_id": ObjectId(ordem.edificio_id)})
+    cliente = await db.clientes.find_one({"_id": ObjectId(ordem.cliente_id)})
     equipamento = await db.equipamentos.find_one({"_id": ObjectId(ordem.equipamento_id)})
     
-    if not edificio or not equipamento:
-        raise HTTPException(status_code=404, detail="Edifício ou Equipamento não encontrado")
+    if not cliente or not equipamento:
+        raise HTTPException(status_code=404, detail="Cliente ou Equipamento não encontrado")
 
     novo_doc = ordem.model_dump()
     result = await db.ordens.insert_one(novo_doc)
@@ -25,14 +25,15 @@ async def create_ordem(ordem: OrdemCreate):
     return OrdemResponse(
         id=str(result.inserted_id),
         titulo=ordem.titulo,
-        edificio_id=ordem.edificio_id,
-        edificio_nome=edificio["nome"],
+        cliente_id=ordem.cliente_id,
+        cliente_nome=cliente["nome"],
         equipamento_id=ordem.equipamento_id,
         equipamento_nome=equipamento["nome"],
         data=ordem.data,
         status=ordem.status,
         tecnico=ordem.tecnico,
-        checklist=ordem.checklist
+        checklist=ordem.checklist,
+        observacoes_gerais=ordem.observacoes_gerais
     )
 
 @router.get("/", response_model=List[OrdemResponse])
@@ -41,22 +42,55 @@ async def list_ordens():
     ordens = []
     cursor = db.ordens.find({}).sort("data", -1)
     async for doc in cursor:
-        edificio = await db.edificios.find_one({"_id": ObjectId(doc["edificio_id"])}) if ObjectId.is_valid(doc.get("edificio_id")) else None
+        cliente = await db.clientes.find_one({"_id": ObjectId(doc["cliente_id"])}) if ObjectId.is_valid(doc.get("cliente_id")) else None
         equipamento = await db.equipamentos.find_one({"_id": ObjectId(doc["equipamento_id"])}) if ObjectId.is_valid(doc.get("equipamento_id")) else None
         
         ordens.append(OrdemResponse(
             id=str(doc["_id"]),
             titulo=doc.get("titulo", ""),
-            edificio_id=doc.get("edificio_id", ""),
-            edificio_nome=edificio["nome"] if edificio else "Desconhecido",
+            cliente_id=doc.get("cliente_id", ""),
+            cliente_nome=cliente["nome"] if cliente else "Desconhecido",
             equipamento_id=doc.get("equipamento_id", ""),
             equipamento_nome=equipamento["nome"] if equipamento else "Desconhecido",
             data=doc.get("data", ""),
             status=doc.get("status", "Planejada"),
             tecnico=doc.get("tecnico", ""),
-            checklist=doc.get("checklist", [])
+            checklist=doc.get("checklist", []),
+            observacoes_gerais=doc.get("observacoes_gerais", "")
         ))
     return ordens
+
+@router.put("/{ordem_id}", response_model=OrdemResponse)
+async def update_ordem(ordem_id: str, ordem: OrdemCreate):
+    if not ObjectId.is_valid(ordem_id):
+        raise HTTPException(status_code=400, detail="ID inválido")
+        
+    db = get_database()
+    
+    cliente = await db.clientes.find_one({"_id": ObjectId(ordem.cliente_id)})
+    equipamento = await db.equipamentos.find_one({"_id": ObjectId(ordem.equipamento_id)})
+    
+    if not cliente or not equipamento:
+        raise HTTPException(status_code=404, detail="Cliente ou Equipamento não encontrado")
+
+    await db.ordens.update_one(
+        {"_id": ObjectId(ordem_id)},
+        {"$set": ordem.model_dump()}
+    )
+    
+    return OrdemResponse(
+        id=ordem_id,
+        titulo=ordem.titulo,
+        cliente_id=ordem.cliente_id,
+        cliente_nome=cliente["nome"],
+        equipamento_id=ordem.equipamento_id,
+        equipamento_nome=equipamento["nome"],
+        data=ordem.data,
+        status=ordem.status,
+        tecnico=ordem.tecnico,
+        checklist=ordem.checklist,
+        observacoes_gerais=ordem.observacoes_gerais
+    )
 
 @router.put("/{ordem_id}/status", response_model=OrdemResponse)
 async def update_status(ordem_id: str, status: str):
@@ -69,29 +103,34 @@ async def update_status(ordem_id: str, status: str):
     if not doc:
         raise HTTPException(status_code=404, detail="Ordem não encontrada")
         
-    # Return basic info to save a query, since frontend updates state locally anyway
     return OrdemResponse(
         id=str(doc["_id"]),
         titulo=doc.get("titulo", ""),
-        edificio_id=doc.get("edificio_id", ""),
-        edificio_nome="", # Simplified for status update
+        cliente_id=doc.get("cliente_id", ""),
+        cliente_nome="", 
         equipamento_id=doc.get("equipamento_id", ""),
         equipamento_nome="",
         data=doc.get("data", ""),
         status=doc.get("status", "Planejada"),
         tecnico=doc.get("tecnico", ""),
-        checklist=doc.get("checklist", [])
+        checklist=doc.get("checklist", []),
+        observacoes_gerais=doc.get("observacoes_gerais", "")
     )
 
 @router.put("/{ordem_id}/checklist/{index}", status_code=status.HTTP_200_OK)
-async def update_checklist_item(ordem_id: str, index: int, concluida: bool):
+async def update_checklist_item(ordem_id: str, index: int, item: dict):
     if not ObjectId.is_valid(ordem_id):
         raise HTTPException(status_code=400, detail="ID inválido")
         
     db = get_database()
+    
+    update_fields = {}
+    for key, val in item.items():
+        update_fields[f"checklist.{index}.{key}"] = val
+        
     await db.ordens.update_one(
         {"_id": ObjectId(ordem_id)}, 
-        {"$set": {f"checklist.{index}.concluida": concluida}}
+        {"$set": update_fields}
     )
     return {"status": "ok"}
 

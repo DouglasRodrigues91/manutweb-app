@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
+import { API_URL } from './apiConfig';
 
 // Componentes da Navegação
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
-import Edificios from './components/Edificios';
+import Clientes from './components/Clientes';
 import Equipamentos from './components/Equipamentos';
 import Tipos from './components/Tipos';
 import Ordens from './components/Ordens';
@@ -17,7 +18,7 @@ function App() {
   const [apiStatus, setApiStatus] = useState('Checking...');
 
   useEffect(() => {
-    fetch('https://manutweb-app.onrender.com/api/health')
+    fetch(`${API_URL}/api/health`)
       .then(res => res.json())
       .then(data => setApiStatus(data.status === 'ok' ? 'Online' : 'Offline'))
       .catch(() => setApiStatus('Offline (API not running)'));
@@ -52,7 +53,7 @@ function App() {
   const renderContent = () => {
     switch(currentRoute) {
       case 'dashboard': return <Dashboard apiStatus={apiStatus} />;
-      case 'edificios': return <Edificios />;
+      case 'clientes': return <Clientes />;
       case 'equipamentos': return <Equipamentos />;
       case 'tipos': return <Tipos />;
       case 'ordens': return <Ordens />;
@@ -73,7 +74,7 @@ function App() {
             <a href="#dashboard" className={currentRoute === 'dashboard' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setCurrentRoute('dashboard'); }}>Dashboard</a>
           </li>
           <li>
-            <a href="#edificios" className={currentRoute === 'edificios' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setCurrentRoute('edificios'); }}>Edifícios</a>
+            <a href="#clientes" className={currentRoute === 'clientes' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setCurrentRoute('clientes'); }}>Clientes</a>
           </li>
           <li>
             <a href="#equipamentos" className={currentRoute === 'equipamentos' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setCurrentRoute('equipamentos'); }}>Equipamentos</a>

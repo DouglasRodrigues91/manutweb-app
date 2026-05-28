@@ -15,6 +15,11 @@ async def create_cliente(cliente: ClienteCreate):
     return ClienteResponse(
         id=str(result.inserted_id),
         nome=cliente.nome,
+        nif=cliente.nif,
+        morada=cliente.morada,
+        email=cliente.email,
+        contato=cliente.contato,
+        periodicidade=cliente.periodicidade,
         status=cliente.status,
         equipamentos=0
     )
@@ -25,12 +30,16 @@ async def list_clientes():
     clientes = []
     cursor = db.clientes.find({})
     async for document in cursor:
-        # Conta equipamentos deste cliente (simplificado por enquanto)
         count_eq = await db.equipamentos.count_documents({"cliente_id": str(document["_id"])})
         
         clientes.append(ClienteResponse(
             id=str(document["_id"]),
             nome=document["nome"],
+            nif=document.get("nif", ""),
+            morada=document.get("morada", ""),
+            email=document.get("email", ""),
+            contato=document.get("contato", ""),
+            periodicidade=document.get("periodicidade", "Mensal"),
             status=document.get("status", "Ativo"),
             equipamentos=count_eq
         ))
@@ -47,14 +56,10 @@ async def update_cliente(cliente_id: str, cliente: ClienteUpdate):
     if not update_data:
         raise HTTPException(status_code=400, detail="Nenhum dado para atualizar")
 
-    result = await db.clientes.update_one(
+    await db.clientes.update_one(
         {"_id": ObjectId(cliente_id)},
         {"$set": update_data}
     )
-    
-    if result.modified_count == 0:
-        # Pode ser que os dados sejam iguais ou não encontrado
-        pass
 
     document = await db.clientes.find_one({"_id": ObjectId(cliente_id)})
     if not document:
@@ -64,6 +69,11 @@ async def update_cliente(cliente_id: str, cliente: ClienteUpdate):
     return ClienteResponse(
         id=str(document["_id"]),
         nome=document["nome"],
+        nif=document.get("nif", ""),
+        morada=document.get("morada", ""),
+        email=document.get("email", ""),
+        contato=document.get("contato", ""),
+        periodicidade=document.get("periodicidade", "Mensal"),
         status=document.get("status", "Ativo"),
         equipamentos=count_eq
     )
@@ -79,5 +89,4 @@ async def delete_cliente(cliente_id: str):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Cliente não encontrado")
     
-    # Também poderíamos deletar os equipamentos vinculados aqui futuramente
     return None

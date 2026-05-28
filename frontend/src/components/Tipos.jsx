@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../apiConfig';
 
 export default function Tipos() {
   const [tipos, setTipos] = useState([]);
@@ -12,7 +13,7 @@ export default function Tipos() {
   }, []);
 
   const fetchTipos = async () => {
-    const res = await fetch('https://manutweb-app.onrender.com/api/tipos/');
+    const res = await fetch(`${API_URL}/api/tipos/`);
     if(res.ok) setTipos(await res.json());
   };
 
@@ -42,7 +43,7 @@ export default function Tipos() {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    const url = editMode ? `https://manutweb-app.onrender.com/api/tipos/${formData.id}` : 'https://manutweb-app.onrender.com/api/tipos/';
+    const url = editMode ? `${API_URL}/api/tipos/${formData.id}` : `${API_URL}/api/tipos/`;
     const method = editMode ? 'PUT' : 'POST';
     await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
     setShowModal(false);
@@ -51,16 +52,15 @@ export default function Tipos() {
 
   const handleDelete = async (id, nome) => {
     if(window.confirm(`Apagar o tipo "${nome}" e suas tarefas?`)) {
-      await fetch(`https://manutweb-app.onrender.com/api/tipos/${id}`, { method: 'DELETE' });
+      await fetch(`${API_URL}/api/tipos/${id}`, { method: 'DELETE' });
       fetchTipos();
     }
   };
 
-  // Pre-populate if empty
   const populateDefaults = async () => {
-    await fetch('https://manutweb-app.onrender.com/api/tipos/', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ nome: 'AVAC - UE', tarefas: ['Limpeza Serpentina', 'Verificação de pressão', 'Lavagem Exterior'] }) });
-    await fetch('https://manutweb-app.onrender.com/api/tipos/', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ nome: 'AVAC - UI', tarefas: ['Limpeza de filtros', 'Verificação de ruídos'] }) });
-    await fetch('https://manutweb-app.onrender.com/api/tipos/', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ nome: 'Ventilador', tarefas: ['Verificar motor', 'Verificar filtro (se aplicável)', 'Medir tensão e consumo'] }) });
+    await fetch(`${API_URL}/api/tipos/`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ nome: 'AVAC - UE', tarefas: ['Limpeza Serpentina', 'Verificação de pressão', 'Lavagem Exterior'] }) });
+    await fetch(`${API_URL}/api/tipos/`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ nome: 'AVAC - UI', tarefas: ['Limpeza de filtros', 'Verificação de ruídos'] }) });
+    await fetch(`${API_URL}/api/tipos/`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ nome: 'Ventilador', tarefas: ['Verificar motor', 'Verificar filtro (se aplicável)', 'Medir tensão e consumo'] }) });
     fetchTipos();
   };
 

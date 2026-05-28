@@ -1,26 +1,27 @@
 from pydantic import BaseModel
 from typing import Optional, List
 
-# --- Edificios ---
-class EdificioCreate(BaseModel):
+# --- Clientes ---
+class ClienteCreate(BaseModel):
     nome: str
     nif: str = ""
     morada: str = ""
     email: str = ""
     contato: str = ""
+    periodicidade: str = "Mensal" # Mensal, Trimestral, Semestral, Anual
     status: str = "Ativo"
 
-class EdificioResponse(EdificioCreate):
+class ClienteResponse(ClienteCreate):
     id: str
-    numero: int = 0
     equipamentos: int = 0
 
-class EdificioUpdate(BaseModel):
+class ClienteUpdate(BaseModel):
     nome: Optional[str] = None
     nif: Optional[str] = None
     morada: Optional[str] = None
     email: Optional[str] = None
     contato: Optional[str] = None
+    periodicidade: Optional[str] = None
     status: Optional[str] = None
 
 # --- Tipos de Equipamento e Tarefas ---
@@ -34,14 +35,18 @@ class TipoEquipamentoResponse(TipoEquipamentoCreate):
 # --- Equipamentos ---
 class EquipamentoCreate(BaseModel):
     nome: str
-    edificio_id: str
+    cliente_id: str
     tipo_id: str
     tipo_nome: str
     prox_manut: str = ""
+    marca: str = ""
+    modelo: str = ""
+    num_serie: str = ""
+    localizacao: str = ""
 
 class EquipamentoResponse(EquipamentoCreate):
     id: str
-    edificio_nome: str
+    cliente_nome: str
 
 # --- Usuários ---
 class UserCreate(BaseModel):
@@ -65,23 +70,27 @@ class Token(BaseModel):
     token_type: str
     user: UserResponse
 
-# --- Ordens de Serviço ---
+# --- Ordens de Serviço (Relatórios) ---
 class ChecklistItem(BaseModel):
     tarefa: str
     concluida: bool = False
+    comentario: str = ""
+    foto_antes: str = ""
+    foto_depois: str = ""
 
 class OrdemCreate(BaseModel):
     titulo: str
-    edificio_id: str
+    cliente_id: str
     equipamento_id: str
     data: str
-    status: str = "Planejada"
+    status: str = "Planejada" # Planejada, Em andamento, Concluída
     tecnico: str = ""
     checklist: List[ChecklistItem] = []
+    observacoes_gerais: str = ""
 
 class OrdemResponse(OrdemCreate):
     id: str
-    edificio_nome: str
+    cliente_nome: str
     equipamento_nome: str
 
 # --- Empresa ---
